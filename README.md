@@ -46,3 +46,20 @@ spec:
   - Ingress
 EOF
 ```
+
+### Enable tracing for Knative Serving
+
+```
+apiVersion: operator.knative.dev/v1alpha1
+kind: KnativeServing
+metadata:
+  name: knative-serving
+  namespace: knative-serving
+spec:
+  config:
+    tracing:
+      sample-rate: "0.1"
+      backend: zipkin
+      zipkin-endpoint: http://jaeger-collector.istio-system.svc.cluster.local:9411/api/v2/spans
+      debug: "false"
+```
