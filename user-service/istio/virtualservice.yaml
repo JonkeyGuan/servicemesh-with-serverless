@@ -1,0 +1,13 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: user-service
+spec:
+  hosts:
+    - user-service
+  http:
+  - route:
+    - destination:
+        host: user-service.servicemesh-with-serverless.svc.cluster.local
+        port:
+          number: 80

@@ -1,0 +1,36 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: service-config
+  namespace: servicemesh-with-serverless
+  labels:
+    serving.knative.dev/visibility: cluster-local
+spec:
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "true"
+        autoscaling.knative.dev/class: kpa.autoscaling.knative.dev
+        autoscaling.knative.dev/maxScale: "1"
+        autoscaling.knative.dev/minScale: "1"
+    spec:
+      containers:
+        - image: image-registry.openshift-image-registry.svc:5000/servicemesh-with-serverless/service-config
+          imagePullPolicy: Always
+          env:
+            - name: JAVA_OPTIONS
+              value: >-
+                -Dspring.profiles.active=native
+                -Dspring.cloud.config.uri=http://service-config.servicemesh-with-serverless.svc.cluster.local/
+            - name: AB_JOLOKIA_OFF
+              value: "true"
+          ports:
+            - containerPort: 8888
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              scheme: HTTP
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              scheme: HTTP
